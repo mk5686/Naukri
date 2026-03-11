@@ -1,10 +1,12 @@
 name: Python package
 
-on: [push]
+on:
+  push:
+  schedule:
+    - cron: "30 3 * * *"
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,6 +31,10 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Test
+      - name: Run Naukri Update
+        env:
+          NAUKRI_USERNAME: ${{ secrets.NAUKRI_USERNAME }}
+          NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
+          NAUKRI_MOBILE: ${{ secrets.NAUKRI_MOBILE }}
         run: |
-          python -m unittest test || python3 -m unittest test.py
+          python naukri.py
